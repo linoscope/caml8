@@ -1,0 +1,5 @@
+(library
+ (name caml8_test)
+ (libraries caml8_lib)
+ (inline_tests)
+ (preprocess (pps ppx_jane)))

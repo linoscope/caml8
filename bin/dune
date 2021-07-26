@@ -1,0 +1,3 @@
+(executable
+ (name main)
+ (libraries caml8_lib base stdio))
