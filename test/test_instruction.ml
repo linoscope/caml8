@@ -19,8 +19,7 @@ let instruction_examples = Instruction.[
     Waitkey vx;
     Ld_i_nnn nnn;
     Spritechar vx;
-    Ld_i_vx vx;
-    Ld_vx_i vx;
+    Regdump vx;
     Drw (vx, vy, n)
   ]
 
@@ -41,6 +40,5 @@ let%expect_test "test to_string" =
     WAITKEY    V0
     LD         I, 0x1ab
     SPRITECHAR F, V0
-    LD         I, V0
-    LD         V0, I
+    REGDUMP    V0~V0
     DRW        V0, Va, 0xa|}]

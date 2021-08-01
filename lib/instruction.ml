@@ -11,8 +11,8 @@ let read ~memory ~pc =
     (x lsr 12, (0x0F00 land x) lsr 8, (0x00F0 land x) lsr 4, 0x000F land x)
   in
   let merge_nibbles3 n1 n2 n3 = (n1 lsl 8) + (n2 lsl 4) + n3 |> Uint16.of_int in
-  let merge_nibbles2 n1 n2 = (n1 lsl 8) + n2 |> Uint8.of_int in
-  let inst = Memory.read_uint16 memory pc in
+  let merge_nibbles2 n1 n2 = (n1 lsl 4) + n2 |> Uint8.of_int in
+  let inst = Memory.read_uint16 memory ~pos:pc in
   match inst |> uint16_to_nibbles with
   | (0x0, 0x0, 0xE, 0x0) -> Cls
   | (0x0, 0x0, 0xE, 0xE) -> Ret
@@ -45,8 +45,8 @@ let read ~memory ~pc =
   | (0xF, x, 0x1, 0xE) -> Add_i_vx (Registers.register_of_int x)
   | (0xF, x, 0x2, 0x9) -> Spritechar (Registers.register_of_int x)
   | (0xF, x, 0x3, 0x3) -> Bcd (Registers.register_of_int x)
-  | (0xF, x, 0x5, 0x5) -> Ld_i_vx (Registers.register_of_int x)
-  | (0xF, x, 0x6, 0x5) -> Ld_vx_i (Registers.register_of_int x)
+  | (0xF, x, 0x5, 0x5) -> Regdump (Registers.register_of_int x)
+  | (0xF, x, 0x6, 0x5) -> Regload (Registers.register_of_int x)
   | _ ->
     let inst_str = inst |> Uint16.to_int |> Printf.sprintf "0x%04x" in
     raise (Unknown_instruction (inst_str, inst))
@@ -84,8 +84,8 @@ let to_string t =
   | Ld_st_vx vx -> Printf.sprintf "%-10s ST, %s" "LD" (Registers.register_to_string vx)
   | Ld_i_nnn nnn -> Printf.sprintf "%-10s I, 0x%x" "LD" (Uint16.to_int nnn)
   | Spritechar vx -> Printf.sprintf "%-10s F, %s" "SPRITECHAR"  (Registers.register_to_string vx)
-  | Ld_i_vx vx -> Printf.sprintf "%-10s I, %s" "LD" (Registers.register_to_string vx)
-  | Ld_vx_i vx -> Printf.sprintf "%-10s %s, I" "LD" (Registers.register_to_string vx)
+  | Regdump vx -> Printf.sprintf "%-10s V0~%s" "REGDUMP"  (Registers.register_to_string vx)
+  | Regload vx -> Printf.sprintf "%-10s V0~%s" "REGLOAD"  (Registers.register_to_string vx)
   | Add_i_vx vx -> Printf.sprintf "%-10s I, %s" "ADD" (Registers.register_to_string vx)
   | Add_vx_nn (vx, nn) -> op_vx_nn_to_string "ADD" vx nn
   | Add_vx_vy (vx, vy) -> op_vx_vy_to_string "ADD" vx vy

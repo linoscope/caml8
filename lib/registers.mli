@@ -24,3 +24,5 @@ val register_to_string : register -> string
 type t
 val create : unit -> t
 val value : t -> register -> uint8
+val set : t -> register -> uint8 -> unit
+val dump : t -> string

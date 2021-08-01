@@ -1,3 +1,3 @@
 (executable
  (name main)
- (libraries caml8_lib base stdio))
+ (libraries caml8_lib base stdio tsdl))

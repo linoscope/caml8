@@ -20,8 +20,8 @@ type t =
   | Ld_st_vx of Registers.register
   | Ld_i_nnn of uint16
   | Spritechar of Registers.register
-  | Ld_i_vx of Registers.register
-  | Ld_vx_i of Registers.register
+  | Regdump of Registers.register
+  | Regload of Registers.register
   | Add_i_vx of Registers.register
   | Add_vx_nn of Registers.register * uint8
   | Add_vx_vy of Registers.register * Registers.register

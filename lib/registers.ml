@@ -25,3 +25,14 @@ let register_to_string register = Printf.sprintf "V%01x" register
 type t = uint8 array
 let create () = Array.create ~len:16 (Uint8.of_int 0)
 let value t register = t.(register)
+let set t register x = t.(register) <- x
+
+let dump t =
+  let buf = Buffer.create 100 in
+  for i = 0 to 15 do
+    let vx = register_of_int i in
+    let s = Printf.sprintf "%s = 0x%x, " (vx |> register_to_string) (value t vx |> Uint8.to_int) in
+    Buffer.add_string buf s
+  done;
+  Buffer.add_char buf '\n';
+  Buffer.contents buf
