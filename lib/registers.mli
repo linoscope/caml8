@@ -20,6 +20,7 @@ val vf : register
 val register_of_int : int -> register
 val register_of_int8 : uint8 -> register
 val register_to_string : register -> string
+val register_to_int : register -> int
 
 type t
 val create : unit -> t

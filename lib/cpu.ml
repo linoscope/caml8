@@ -42,7 +42,7 @@ let tick t =
       Next
     | Ret ->
       let ret_addr = Memory.read_uint16 t.memory ~pos:t.sp in
-      t.sp <- Uint16.pred t.sp;
+      t.sp <- Uint16.(t.sp - of_int 2);
       Jump ret_addr
     | Jp nnn ->
       Jump nnn
@@ -50,8 +50,8 @@ let tick t =
       let v0 = read_register t Registers.v0 in
       Jump Uint16.(of_uint8 v0 + nnn)
     | Call nnn ->
-      Memory.write_uint16 t.memory ~pos:t.sp t.pc;
-      t.sp <- Uint16.succ t.sp;
+      t.sp <- Uint16.(t.sp + of_int 2);
+      Memory.write_uint16 t.memory ~pos:t.sp Uint16.(t.pc + of_int 2);
       Jump nnn
     | Se_vx_nn (vx, nn) ->
       let vx = read_register t vx in
@@ -98,15 +98,14 @@ let tick t =
       Next
     | Ld_i_nnn nnn ->
       t.i <- nnn;
-      Stdio.printf "ld i=%d\n" (t.i |> Uint16.to_int);
       Next
     | Spritechar vx ->
       let vx = read_register t vx |> Uint16.of_uint8 in
       t.i <- Uint16.(Uint16.zero + vx * of_int 5);
       Next
     | Regdump vx ->
-      let vx = read_register t vx |> Uint8.to_int in
-      for i = 0 to vx do
+      let n = Registers.register_to_int vx in
+      for i = 0 to n do
         let vi = Registers.register_of_int i |> Registers.value t.registers in
         Memory.write_uint8 t.memory ~pos:Uint16.(t.i + of_int i) vi
       done;
@@ -201,7 +200,7 @@ let tick t =
       Next
   in
   (* Stdio.printf "%s\n" (Instruction.to_string instruction);
-   * Stdio.printf "I=%x, pc=%x, " (t.i |> Uint16.to_int) (t.pc |> Uint16.to_int);
+   * Stdio.printf "I=%x, pc=%x, sp=%x, " (t.i |> Uint16.to_int) (t.pc |> Uint16.to_int) (t.sp |> Uint16.to_int);
    * Stdio.printf "%s\n" (Registers.dump t.registers); *)
   match next_pc with
   | Next -> t.pc <- Uint16.(t.pc + of_int 2)

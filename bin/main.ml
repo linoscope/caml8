@@ -3,23 +3,17 @@ open Base
 open Stdio
 open Tsdl
 
-let init_graphics () =
-  match Sdl.init Sdl.Init.video with
-  | Error (`Msg e) -> Sdl.log "Init error: %s" e; Caml.exit 1
-  | Ok () ->
-    match Sdl.create_window ~w:640 ~h:320 "SDL OpenGL" Sdl.Window.opengl with
-    | Error (`Msg e) -> Sdl.log "Create window error: %s" e; Caml.exit 1
-    | Ok w ->
-      match Sdl.create_renderer w ~index:(-1) with
-      | Error (`Msg e) -> Sdl.log "Create window error: %s" e; Caml.exit 1
-      | Ok renderer -> renderer
-
 let or_exit = function
   | Error (`Msg e) -> Sdl.log "%s" e; Caml.exit 1
   | Ok x -> x
 
+let init_graphics () =
+  Sdl.init Sdl.Init.video |> or_exit;
+  let w = Sdl.create_window ~w:640 ~h:320 "SDL OpenGL" Sdl.Window.opengl |> or_exit in
+  Sdl.create_renderer w ~index:(-1) |> or_exit
+
 let () =
-  let rom = In_channel.read_all "resources/Fishie.ch8" |> Bytes.of_string in
+  let rom = In_channel.read_all "resources/test_opcode.ch8" |> Bytes.of_string in
   let cpu = Cpu.create ~rom in
   let renderer = init_graphics () in
   let clear () =

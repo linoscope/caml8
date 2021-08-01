@@ -20,7 +20,8 @@ let ve = 14
 let vf = 15
 let register_of_int i = i
 let register_of_int8 i = Uint8.to_int i
-let register_to_string register = Printf.sprintf "V%01x" register
+let register_to_string register = Printf.sprintf "V%x" register
+let register_to_int register = register
 
 type t = uint8 array
 let create () = Array.create ~len:16 (Uint8.of_int 0)
