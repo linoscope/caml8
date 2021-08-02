@@ -9,7 +9,7 @@ type t = {
   mutable pc : uint16;
   mutable dt : uint8;
   mutable st : uint8;
-  key_state : bool array;
+  mutable key_state : uint8 option;
   gfx : bool array;
 }
 
@@ -26,7 +26,7 @@ let create ~rom =
     pc = rom_base;
     dt = Uint8.zero;
     st = Uint8.zero;
-    key_state = Array.create ~len:16 false;
+    key_state = None;
     gfx = Array.create ~len:(64 * 32) false;
   }
 
@@ -68,15 +68,23 @@ let tick t =
       let vy = read_register t vy in
       if Uint8.compare vx vy <> 0 then Skip else Next
     | Skp vx ->
-      let vx = read_register t vx |> Uint8.to_int in
-      if t.key_state.(vx) then Skip else Next
+      let vx = read_register t vx in
+      begin match t.key_state with
+        | Some k when Uint8.compare vx k = 0 -> Skip
+        | None
+        | Some _ -> Next
+      end
     | Sknp vx ->
-      let vx = read_register t vx |> Uint8.to_int in
-      if not t.key_state.(vx) then Skip else Next
+      let vx = read_register t vx in
+      begin match t.key_state with
+        | Some k when Uint8.compare vx k <> 0 -> Skip
+        | None
+        | Some _ -> Next
+      end
     | Waitkey vx ->
-      begin match t.key_state |> Array.findi ~f:(fun _ b -> b) with
+      begin match t.key_state with
         | None -> Jump t.pc
-        | Some (ki, _) -> write_register t vx (Uint8.of_int ki); Next
+        | Some k -> write_register t vx k; Next
       end
     | Ld_vx_nn (vx, nn) ->
       write_register t vx nn;
@@ -107,11 +115,11 @@ let tick t =
       let n = Registers.register_to_int vx in
       for i = 0 to n do
         let vi = Registers.register_of_int i |> Registers.value t.registers in
-        Memory.write_uint8 t.memory ~pos:Uint16.(t.i + of_int i) vi
+        Memory.write_uint8 t.memory ~pos:Uint16.(t.i + of_int 2 * of_int i) vi
       done;
       Next
     | Regload vx ->
-      let vx = read_register t vx |> Uint8.to_int in
+      let vx = Registers.register_to_int vx in
       for i = 0 to vx do
         let vi = Registers.register_of_int i in
         let x = Memory.read_uint8 t.memory ~pos:Uint16.(t.i + of_int i) in
@@ -174,9 +182,9 @@ let tick t =
     | Bcd vx ->
       let vx = read_register t vx |> Uint8.to_int in
       let ones, tens, hundreds = vx % 10, (vx / 10) % 10, (vx / 100) % 10 in
-      Memory.write_uint16 t.memory ~pos:t.i (Uint16.of_int hundreds);
-      Memory.write_uint16 t.memory ~pos:(Uint16.succ t.i) (Uint16.of_int tens);
-      Memory.write_uint16 t.memory ~pos:Uint16.(add t.i (of_int 2)) (Uint16.of_int ones);
+      Memory.write_uint8 t.memory ~pos:t.i (Uint8.of_int hundreds);
+      Memory.write_uint8 t.memory ~pos:Uint16.(t.i + of_int 1) (Uint8.of_int tens);
+      Memory.write_uint8 t.memory ~pos:Uint16.(t.i + of_int 2) (Uint8.of_int ones);
       Next
     | Rnd (vx, nn) ->
       let random_u8 = Random.int 255 |> Uint8.of_int in
@@ -199,12 +207,19 @@ let tick t =
       done;
       Next
   in
-  (* Stdio.printf "%s\n" (Instruction.to_string instruction);
+  (* Stdio.printf "x_[I]=%x\n" @@ (Memory.read_uint16 t.memory ~pos:t.i |> Uint16.to_int);
+   * Stdio.printf "%s\n" (Instruction.to_string instruction);
    * Stdio.printf "I=%x, pc=%x, sp=%x, " (t.i |> Uint16.to_int) (t.pc |> Uint16.to_int) (t.sp |> Uint16.to_int);
-   * Stdio.printf "%s\n" (Registers.dump t.registers); *)
+   * Stdio.printf "%s\n" (Registers.dump t.registers);
+   * Stdio.printf "key_state=%x\n" (t.key_state |> Option.value ~default:(Uint8.of_int (-1)) |> Uint8.to_int);
+   * if Option.is_some t.key_state then
+   *   Stdio.printf "Key pressed! %x\n" (t.key_state |> Option.value_exn |> Uint8.to_int);
+   * Stdio.printf "[I]=%x\n" @@ (Memory.read_uint16 t.memory ~pos:t.i |> Uint16.to_int); *)
   match next_pc with
   | Next -> t.pc <- Uint16.(t.pc + of_int 2)
   | Skip -> t.pc <- Uint16.(t.pc + of_int 4)
   | Jump addr -> t.pc <- addr
 
 let get_gfx t = t.gfx
+
+let set_key t k = t.key_state <- k
