@@ -4,7 +4,7 @@ open Stdint
 open Stdio
 open Tsdl
 
-let paused = ref false
+let last_tick = ref 0.
 
 let or_exit = function
   | Error (`Msg e) -> Sdl.log "%s" e; Caml.exit 1
@@ -42,24 +42,23 @@ let handle_event cpu =
     | `Key_down ->
       let scancode = Sdl.Event.(get event keyboard_scancode) in
       begin match Sdl.Scancode.enum scancode with
-        | `K0 -> set_some_key cpu 0x0
         | `K1 -> set_some_key cpu 0x1
         | `K2 -> set_some_key cpu 0x2
         | `K3 -> set_some_key cpu 0x3
-        | `K4 -> set_some_key cpu 0x4
-        | `K5 -> set_some_key cpu 0x5
-        | `K6 -> set_some_key cpu 0x6
-        | `K7 -> set_some_key cpu 0x7
-        | `K8 -> set_some_key cpu 0x8
-        | `K9 -> set_some_key cpu 0x9
-        | `A -> set_some_key cpu 0xa
-        | `B -> set_some_key cpu 0xb
-        | `C -> set_some_key cpu 0xc
-        | `D -> set_some_key cpu 0xd
-        | `E -> set_some_key cpu 0xe
-        | `F -> set_some_key cpu 0xf
+        | `K4 -> set_some_key cpu 0xC
+        | `Q  -> set_some_key cpu 0x4
+        | `W -> set_some_key cpu 0x5
+        | `E -> set_some_key cpu 0x6
+        | `R -> set_some_key cpu 0xD
+        | `A -> set_some_key cpu 0x7
+        | `S  -> set_some_key cpu 0x8
+        | `D  -> set_some_key cpu 0x9
+        | `F  -> set_some_key cpu 0xE
+        | `Z  -> set_some_key cpu 0xA
+        | `X -> set_some_key cpu 0x0
+        | `C  -> set_some_key cpu 0xB
+        | `V  -> set_some_key cpu 0xF
         | `Escape -> Caml.exit 0
-        | `Space -> paused := true
         | `N -> Cpu.tick cpu
         | _ -> set_none_key cpu
       end
@@ -69,17 +68,20 @@ let handle_event cpu =
 
 
 let () =
-  let rom = In_channel.read_all "resources/random_number_test.ch8" |> Bytes.of_string in
+  let argv = Sys.get_argv () in
+  if Array.length argv < 2 then begin
+    prerr_endline "Usage : main <file name>";
+    Caml.exit 2
+  end;
+  let rom = In_channel.read_all argv.(1) |> Bytes.of_string in
   let cpu = Cpu.create ~rom in
   let renderer = init_graphics () in
   while true do
-    if not !paused then begin
+    if Float.((Unix.gettimeofday() -. !last_tick) >= 1./.60.) then begin
       Cpu.tick cpu;
       clear_graphics renderer;
       draw_graphics cpu renderer;
-    end else begin
-      Sdl.delay 10l;
-      Cpu.tick cpu
-    end;
-    handle_event cpu
+      handle_event cpu;
+      last_tick := Unix.gettimeofday();
+    end
   done

@@ -115,7 +115,7 @@ let tick t =
       let n = Registers.register_to_int vx in
       for i = 0 to n do
         let vi = Registers.register_of_int i |> Registers.value t.registers in
-        Memory.write_uint8 t.memory ~pos:Uint16.(t.i + of_int 2 * of_int i) vi
+        Memory.write_uint8 t.memory ~pos:Uint16.(t.i + of_int i) vi
       done;
       Next
     | Regload vx ->
@@ -197,10 +197,9 @@ let tick t =
         let sprite_line = Memory.read_uint8 t.memory ~pos:Uint16.(t.i + of_int y) |> Uint8.to_int in
         for x = 0 to 7 do
           let sprite_bit = (sprite_line lsr (7 - x)) land (0b00000001) = 1 in
-          let gfx_i = (y + vy) * 64 + x + vx in
+          let gfx_i = ((y + vy) % 32) * 64 + (x + vx % 64) in
           if sprite_bit && t.gfx.(gfx_i) then begin
             t.gfx.(gfx_i) <- false;
-            Registers.set t.registers Registers.vf Uint8.one
           end else if sprite_bit then
             t.gfx.(gfx_i) <- true
         done
@@ -215,6 +214,8 @@ let tick t =
    * if Option.is_some t.key_state then
    *   Stdio.printf "Key pressed! %x\n" (t.key_state |> Option.value_exn |> Uint8.to_int);
    * Stdio.printf "[I]=%x\n" @@ (Memory.read_uint16 t.memory ~pos:t.i |> Uint16.to_int); *)
+
+  t.dt <- Uint8.(if (compare t.dt zero) = 0 then zero else t.dt - one);
   match next_pc with
   | Next -> t.pc <- Uint16.(t.pc + of_int 2)
   | Skip -> t.pc <- Uint16.(t.pc + of_int 4)
