@@ -42,28 +42,28 @@ let handle_event cpu =
     | `Key_down ->
       let scancode = Sdl.Event.(get event keyboard_scancode) in
       begin match Sdl.Scancode.enum scancode with
-        | `K1 -> set_some_key cpu 0x1
-        | `K2 -> set_some_key cpu 0x2
-        | `K3 -> set_some_key cpu 0x3
-        | `K4 -> set_some_key cpu 0xC
-        | `Q  -> set_some_key cpu 0x4
-        | `W -> set_some_key cpu 0x5
-        | `E -> set_some_key cpu 0x6
-        | `R -> set_some_key cpu 0xD
-        | `A -> set_some_key cpu 0x7
-        | `S  -> set_some_key cpu 0x8
-        | `D  -> set_some_key cpu 0x9
-        | `F  -> set_some_key cpu 0xE
-        | `Z  -> set_some_key cpu 0xA
-        | `X -> set_some_key cpu 0x0
-        | `C  -> set_some_key cpu 0xB
-        | `V  -> set_some_key cpu 0xF
+        | `K1     -> set_some_key cpu 0x1
+        | `K2     -> set_some_key cpu 0x2
+        | `K3     -> set_some_key cpu 0x3
+        | `K4     -> set_some_key cpu 0xC
+        | `Q      -> set_some_key cpu 0x4
+        | `W      -> set_some_key cpu 0x5
+        | `E      -> set_some_key cpu 0x6
+        | `R      -> set_some_key cpu 0xD
+        | `A      -> set_some_key cpu 0x7
+        | `S      -> set_some_key cpu 0x8
+        | `D      -> set_some_key cpu 0x9
+        | `F      -> set_some_key cpu 0xE
+        | `Z      -> set_some_key cpu 0xA
+        | `X      -> set_some_key cpu 0x0
+        | `C      -> set_some_key cpu 0xB
+        | `V      -> set_some_key cpu 0xF
         | `Escape -> Caml.exit 0
-        | `N -> Cpu.tick cpu
-        | _ -> set_none_key cpu
+        | _       -> ()
       end
-    | `Quit -> Sdl.log "Quitting..."; Caml.exit 0
-    | _ -> set_none_key cpu
+    | `Key_up -> set_none_key cpu
+    | `Quit   -> Caml.exit 0
+    | _       -> ()
   end
 
 
@@ -77,7 +77,7 @@ let () =
   let cpu = Cpu.create ~rom in
   let renderer = init_graphics () in
   while true do
-    if Float.((Unix.gettimeofday() -. !last_tick) >= 1./.60.) then begin
+    if Float.((Unix.gettimeofday() -. !last_tick) >= 1./.360.) then begin
       Cpu.tick cpu;
       clear_graphics renderer;
       draw_graphics cpu renderer;

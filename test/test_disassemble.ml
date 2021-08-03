@@ -267,7 +267,7 @@ let%expect_test "Test Fische.ch8" =
     0x0356 LD         I, 0x206
     0x0358 LD         V6, 0x8c
     0x035a LD         V7, 0x78
-    0x035c SUBN       V7, V6
+    0x035c SUB        V7, V6
     0x035e SNE        V7, 0xec
     0x0360 LD         I, 0x202
     0x0362 DRW        Va, Vb, 0x4
