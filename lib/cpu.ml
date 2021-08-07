@@ -218,14 +218,10 @@ let execute_instruction (t : t) (instruction : Instruction.t) : next_pc =
 let tick t =
   let instruction = Instruction.read ~memory:t.memory ~pc:t.pc in
   let next_pc =execute_instruction t instruction in
-  (* Stdio.printf "x_[I]=%x\n" @@ (Memory.read_uint16 t.memory ~pos:t.i |> Uint16.to_int);
-   * Stdio.printf "%s\n" (Instruction.to_string instruction);
+  (* Stdio.printf "%s\n" (Instruction.to_string instruction);
    * Stdio.printf "I=%x, pc=%x, sp=%x, " (t.i |> Uint16.to_int) (t.pc |> Uint16.to_int) (t.sp |> Uint16.to_int);
    * Stdio.printf "%s\n" (Registers.dump t.registers);
-   * Stdio.printf "key_state=%x\n" (t.key_state |> Option.value ~default:(Uint8.of_int (-1)) |> Uint8.to_int);
-   * if Option.is_some t.key_state then
-   *   Stdio.printf "Key pressed! %x\n" (t.key_state |> Option.value_exn |> Uint8.to_int);
-   * Stdio.printf "[I]=%x\n" @@ (Memory.read_uint16 t.memory ~pos:t.i |> Uint16.to_int); *)
+   * Stdio.printf "key_state=%x\n" (t.key_state |> Option.value ~default:(Uint8.of_int (-1)) |> Uint8.to_int) *)
 
   t.dt <- Uint8.(if (compare t.dt zero) = 0 then zero else t.dt - one);
   match next_pc with

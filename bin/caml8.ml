@@ -12,7 +12,7 @@ let or_exit = function
 
 let init_graphics () =
   Sdl.init Sdl.Init.video |> or_exit;
-  let w = Sdl.create_window ~w:640 ~h:320 "SDL OpenGL" Sdl.Window.opengl |> or_exit in
+  let w = Sdl.create_window ~w:640 ~h:320 "Caml8" Sdl.Window.opengl |> or_exit in
   let renderer = Sdl.create_renderer w ~index:(-1) |> or_exit in
   Sdl.set_render_draw_color renderer 0xFF 0xFF 0xFF 0xFF |> or_exit;
   renderer

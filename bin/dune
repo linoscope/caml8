@@ -1,4 +1,4 @@
 (executables
- (names main disassemble)
+ (names caml8 disassemble)
  (libraries caml8_lib base stdio tsdl)
  (preprocess (pps ppx_jane)))
