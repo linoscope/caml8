@@ -12,7 +12,6 @@ A CHIP8 emulator written in OCaml
 
 - [tsdl](https://github.com/dbuenzli/tsdl)
 - [base](https://github.com/janestreet/base)
-- [ocaml-stdint](https://github.com/andrenth/ocaml-stdint)
 - [ppx_jane](https://github.com/janestreet/ppx_jane)
 
 # How to run

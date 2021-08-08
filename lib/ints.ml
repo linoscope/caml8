@@ -42,7 +42,7 @@ let make_basics_module (max_int : int) : (module Ints_intf.Basics) = (module str
 end : Ints_intf.Basics)
 
 module Uint8 : Ints_intf.S = struct
-  module B = (val make_basics_module 0xf : Ints_intf.Basics)
+  module B = (val make_basics_module 0xff : Ints_intf.Basics)
   include B
 
   module Infix = MakeInfix(B)
@@ -50,7 +50,7 @@ module Uint8 : Ints_intf.S = struct
 end
 
 module Uint16 : Ints_intf.S = struct
-  module B = (val make_basics_module 0xff : Ints_intf.Basics)
+  module B = (val make_basics_module 0xffff : Ints_intf.Basics)
   include B
 
   module Infix = MakeInfix(B)
