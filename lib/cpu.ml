@@ -1,5 +1,5 @@
 open Base
-open Stdint
+open Ints
 
 type t = {
   memory : Memory.t;
@@ -46,8 +46,8 @@ let execute_instruction (t : t) (instruction : Instruction.t) : next_pc =
   | Jp nnn ->
     Jump nnn
   | Jp_v0 nnn ->
-    let v0 = read_register t Registers.v0 in
-    Jump Uint16.(of_uint8 v0 + nnn)
+    let v0 = read_register t Registers.v0 |> Uint8.to_int in
+    Jump Uint16.(of_int v0 + nnn)
   | Call nnn ->
     t.sp <- Uint16.(t.sp + of_int 2);
     Memory.write_uint16 t.memory ~pos:t.sp Uint16.(t.pc + of_int 2);
@@ -115,8 +115,8 @@ let execute_instruction (t : t) (instruction : Instruction.t) : next_pc =
     t.i <- nnn;
     Next
   | Spritechar vx ->
-    let vx = read_register t vx |> Uint16.of_uint8 in
-    t.i <- Uint16.(Uint16.zero + vx * of_int 5);
+    let vx = read_register t vx |> Uint8.to_int in
+    t.i <- Uint16.(Uint16.zero + of_int vx * of_int 5);
     Next
   | Regdump vx ->
     let n = Registers.register_to_int vx in
@@ -134,8 +134,8 @@ let execute_instruction (t : t) (instruction : Instruction.t) : next_pc =
     done;
     Next
   | Add_i_vx vx ->
-    let vx = read_register t vx in
-    t.i <- Uint16.(t.i + of_uint8 vx);
+    let vx = read_register t vx |> Uint8.to_int in
+    t.i <- Uint16.(t.i + of_int vx);
     Next
   | Add_vx_nn (vx, nn) ->
     let vx' = read_register t vx in

@@ -1,6 +1,6 @@
 open Caml8_lib
 open Base
-open Stdint
+open Ints
 open Stdio
 open Tsdl
 

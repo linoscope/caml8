@@ -43,14 +43,20 @@ end : Ints_intf.Basics)
 
 module Uint8 : Ints_intf.S = struct
   module B = (val make_basics_module 0xf : Ints_intf.Basics)
-
   include B
+
   module Infix = MakeInfix(B)
+  include Infix
 end
 
 module Uint16 : Ints_intf.S = struct
   module B = (val make_basics_module 0xff : Ints_intf.Basics)
-
   include B
+
   module Infix = MakeInfix(B)
+  include Infix
 end
+
+type uint8 = Uint8.t
+
+type uint16 = Uint16.t

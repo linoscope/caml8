@@ -1,4 +1,4 @@
-open Stdint
+open Ints
 
 type register
 val v0 : register

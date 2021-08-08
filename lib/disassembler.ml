@@ -1,9 +1,9 @@
 open Base
 open Stdio
-open Stdint
+open Ints
 
 let disassemble ~in_ ~out =
-  let size = In_channel.length in_ |> Int64.to_int in
+  let size = In_channel.length in_ |> Int64.to_int_exn in
   let buf = Bytes.create (0x200 + size) in
   In_channel.really_input_exn in_ ~buf ~pos:0x200 ~len:size;
   let memory = Memory.of_bytes buf in

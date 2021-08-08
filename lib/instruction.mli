@@ -1,4 +1,4 @@
-open Stdint
+open Ints
 
 include module type of Instruction_type
 

@@ -1,6 +1,6 @@
 open Base
 open Stdio
-open Stdint
+open Caml8_lib.Ints
 open Caml8_lib
 
 let nnn = Uint16.of_int 0x1AB

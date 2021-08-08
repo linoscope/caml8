@@ -1,5 +1,5 @@
 open Base
-open Stdint
+open Ints
 
 include Instruction_type
 

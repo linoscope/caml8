@@ -1,7 +1,7 @@
 open Stdio
-open Stdint
 open Base
 open Caml8_lib
+open Caml8_lib.Ints
 
 let%expect_test "test" =
   let memory = Memory.create () in

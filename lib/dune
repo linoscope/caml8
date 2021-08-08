@@ -1,5 +1,5 @@
 (library
  (name caml8_lib)
- (libraries base stdint)
+ (libraries base)
  (inline_tests)
  (preprocess (pps ppx_jane)))

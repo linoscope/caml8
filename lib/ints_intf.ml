@@ -47,4 +47,5 @@ module type S = sig
   include Basics
 
   module Infix : Infix with type t := t
+  include Infix with type t := t
 end
