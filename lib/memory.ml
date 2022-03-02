@@ -6,6 +6,8 @@ type t = bytes
 let create () = Bytes.create 4096
 let of_bytes b = b
 
+let size t = Bytes.length t
+
 let load t ~src ~dst_pos =
   Bytes.blito ~src ~dst:t ~dst_pos:(Uint16.to_int dst_pos) ()
 

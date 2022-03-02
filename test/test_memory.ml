@@ -17,4 +17,9 @@ let%expect_test "test" =
   |> Uint8.to_int
   |> printf "%x";
 
-  [%expect {| ab |}]
+  [%expect {| ab |}];
+
+  Memory.size memory
+  |> printf "%x";
+
+  [%expect {| 1000 |}];
