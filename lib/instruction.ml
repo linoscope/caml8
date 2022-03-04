@@ -98,7 +98,7 @@ let to_string t =
   | Shr vx -> op_vx_to_string "SHR" vx
   | Shl vx -> op_vx_to_string "SHL" vx
   | Bcd vx -> op_vx_to_string "BCD" vx
-  | Rnd (vx, nn) -> op_vx_nn_to_string "SHR" vx nn
+  | Rnd (vx, nn) -> op_vx_nn_to_string "RND" vx nn
   | Drw (vx, vy, n) ->
     Printf.sprintf "%-10s %s, %s, 0x%x" "DRW"
       (Registers.register_to_string vx) (Registers.register_to_string vy) (Uint8.to_int n)
